@@ -75,7 +75,7 @@ static ID i_iconv;
 static VALUE mJSON, mExt, cParser, eParserError, eNestingError;
 static VALUE CNaN, CInfinity, CMinusInfinity;
 
-static ID i_json_creatable_p, i_json_create, i_create_id, i_create_additions,
+static ID i_json_creatable_p, i_json_create, i_set_value, i_create_id, i_create_additions,
           i_chr, i_max_nesting, i_allow_nan, i_symbolize_names, i_object_class,
           i_array_class, i_key_p, i_deep_const_get;
 
@@ -119,7 +119,7 @@ static ID i_json_creatable_p, i_json_create, i_create_id, i_create_additions,
         if (np == NULL) {
             fhold; fbreak;
         } else {
-            rb_hash_aset(*result, last_name, v);
+            NIL_P(object_class) ? rb_hash_aset(*result, last_name, v) : rb_funcall(*result, i_set_value, 2, last_name, v);
             fexec np;
         }
     }
@@ -765,6 +765,7 @@ void Init_parser()
 
     i_json_creatable_p = rb_intern("json_creatable?");
     i_json_create = rb_intern("json_create");
+    i_set_value = rb_intern("[]=");
     i_create_id = rb_intern("create_id");
     i_create_additions = rb_intern("create_additions");
     i_chr = rb_intern("chr");
