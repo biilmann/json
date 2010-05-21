@@ -174,6 +174,8 @@ class TC_JSON < Test::Unit::TestCase
   end
 
   class SubHash < Hash
+    attr_reader :keys
+    
     def to_json(*a)
       {
         JSON.create_id => self.class.name,
@@ -184,12 +186,23 @@ class TC_JSON < Test::Unit::TestCase
       o.delete JSON.create_id
       new.merge(o)
     end
+    
+    def initialize
+      super
+      @keys = []
+    end
+    
+    def []=(key, value)
+      @keys << key
+      super
+    end
   end
 
   def test_parse_object_custom_class
-    res = parse('{}', :object_class => SubHash)
-    assert_equal({}, res)
+    res = parse('{"a": "b"}', :object_class => SubHash)
+    assert_equal({"a" => "b"}, res)
     assert_equal(SubHash, res.class)
+    assert_equal(["a"], res.keys)
   end
 
   def test_generation_of_core_subclasses
